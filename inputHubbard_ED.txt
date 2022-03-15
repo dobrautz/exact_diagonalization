@@ -1,0 +1,18 @@
+4;% start paramU  on-site-repulsion parameter U
+4;% end   paramU
+1;% start paramT  hopping parameter t
+1;% end   paramT
+1;% lattice Dimension
+2;% start latticeSize or X depending on dimension
+15;% end   latticeSize or Y 
+1;% flag if one should loop over all possible filling factor
+0;% diffQuarterFillingUp if FLAG above FALSE these values count
+0;% diffQuarterFillingDown
+1;% nLanczosEigenvalues  
+10e-5;% lanczosPrecision 
+200;% nLanczosSteps       
+1;% flagApplyPointGroup  
+1; % flagDoNoSymmetry
+1;% flagDoOnlyTrans 
+0;% flagSaveResults
+0;% how far from half filling in possible filling factors

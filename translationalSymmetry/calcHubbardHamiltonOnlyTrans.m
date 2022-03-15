@@ -1,0 +1,180 @@
+function H = calcHubbardHamiltonOnlyTrans( basisReprUp, compDownStatesPerRepr,...
+    compInd2ReprDown,paramU, paramT, indNeighbors, normHubbardStates, ...
+    symOpInvariantsUp, kValue, index2ReprUp, symOp2ReprUp, intStatesUp, ...
+    basisStatesDown)
+%CALCHUBBARDHAMILTONONLYTRANS calculates the hubbard for just translation
+% symmetry for one and two dimensions
+% 
+% Input:    basisReprUp         Representatives of UP spin channel
+%           compDownStatesPerRepr Representatives of DOWN spin channel in
+%                               cell format. numel of this is the size of
+%                               the hubbard basis. each cell element
+%                               (matrix) corresponds to an UP spin repr.
+%           paramU/T            parameters U and t of hubbard hamilton
+%           indNeigbors         index matrix of lattice neighbors. this
+%                               indicates dimension and lattice
+%                               identification, for later generalization
+%           normHubbardStates   cell array of norms of hubbard states
+%           symOpInvariantsUp   diagonal part of translation matrix Tj for
+%                               UP spin part. needed in calculation of down
+%                               spin part of hopping hamilton. elements are
+%                               the phases and (columnPos-1) = translation
+%                               power T^j
+%           kValue              k vector value
+%           index2ReprUp        linking list of whole basis and UP spin
+%                               representatives. signed integer list! the
+%                               sign gives the phase factor of the state
+%           symOp2ReprUp        symmetry operations linking basis states
+%                               corresponding representatives
+%           intStatesUp         integer values of all reached Up spin
+%                               states. needed in calulation of up spin
+%                               hopping part for right linking in
+%                               combination with index2ReprUp
+%           basisStatesDown     whole down spin basis
+% 
+% Output:   H                   Hubbard Hamilton Matrix
+%
+% OLD NOTES:
+% diagonal part of hamiltonian: <D|<U| Pk Hd |U>|D> stays diagonal, but in
+% calculation one has to take care of reapearing states in Pk|Psi> and
+% count how often thois happens for up anddown spin part and sum over resp.
+% off-diagonal( hopping part) hamiltonian starts same way as i thought
+% before but also have to apply projector Pk after Hh |psi> and than one
+% has to look up ( calculate which states <U'|<D'| Pk Hh |U>|D> are
+% connected: so one has to include the projector Pk in algorithms. or maybe
+% there is a clever way of hash links to do the trick also! think about it!
+% NOTE 13.05.2013:
+% ad diagonal part of hamiltonian Hd:
+% <rk|Hd|rk> = <r|Pk Hd Pk |r> / <r|Pk|r> = Hd(r) <r|Pk|r>/<r|Pk|r> = Hd(r)
+% = summe of doubly occupancies!!! wait
+% actually Hd(r) * <r|Pk|r>/ |<r|Pk|r>| = sgn(<Pk>)*Hd(r) is sign possible?
+% TODO: check if sign possible!
+% if sign is possible still easy to include. just use sign of normHubbard
+% in right way in combination below!
+% for now disregard possibility of negative or complex norm and go on:
+% NOTE: 27.05.13: change in algorithm: to improve performance in down spin
+% hopping matrix calcualtion: apply H|D> once to whole down spin basis and
+% then link it to specific down spin part of representatives through
+% compInd2ReprDown. can use this probably for other calculaions too:
+% eg. make the transition overlap matrices for whole down spin basis and
+% link to it through this list TODO
+% NOTE: 28.05.13: have to adapt to new reference saving way of downState
+% representatives and corresponding list
+%  also made changes to memory efficiency
+% 
+%------------------------SVN Info------------------------------------------
+% $Rev:: 54                                     $: Revision of last commit 
+% $Author:: dobrautz                            $: Author of last commit   
+% $Date:: 2013-06-03 11:26:59 +0200 (Mon, 03. J#$: Date of last commit     
+% -------------------------------------------------------------------------
+
+% number of UP spin Repr
+[nReprUp,~] = size(basisReprUp);
+% size of whole hubbard basis
+nHubbardStates = 0;
+
+if nReprUp == 0
+    H = [];
+
+else
+    
+    %% ------------------- Diagonal Term ----------------------------------
+    % count double occupancies!
+    % container for double occupancies
+    doubleOccupancies = cell(nReprUp,1);
+    %loop over repr.
+    for iRepr = 1:nReprUp
+        
+        % pick out down states per up spin repr.
+        specBasisStatesDown = compDownStatesPerRepr{iRepr};
+        
+        % have to check if it just references
+        [~,referenceTest] = size(specBasisStatesDown);
+        if referenceTest == 1 
+            % values in specBasisStatesDown is referenve value
+            specBasisStatesDown = compDownStatesPerRepr{specBasisStatesDown};
+     
+        end
+        % number of |d> states
+        [nBasisStatesDown,~] = size(specBasisStatesDown);
+        % add up size of whole hubbard basis
+        nHubbardStates = nHubbardStates + nBasisStatesDown;
+        % check which sites are doubly occupied with bsxfun not repmat
+        isDoublyOccupied = bsxfun(@and, basisReprUp(iRepr,:), specBasisStatesDown);
+%         % replicate B_repr to size of B
+%         replReprUp = repmat(basisReprUp(iRepr,:),nBasisStatesDown,1);
+%         % check which sites are doubly occupied
+%         isDoublyOccupied = and(replReprUp,specBasisStatesDown);
+        % sum over them. is this right? yes!
+        doubleOccupancies{iRepr} = sum(isDoublyOccupied,2);
+        
+    end
+    % convert cell to vector
+    doubleOccupancies = cell2mat(doubleOccupancies);
+    matIndex = 1:nHubbardStates;
+    
+    % diagonal terms <rk|Hd|rk> = <r|Pk Hd Pk |r> / <r|Pk|r> =
+    % = Hd(r) <r|Pk|r>/<r|Pk|r> = Hd(r);  see note above
+    H_diag = paramU * doubleOccupancies(:);
+    H_diag = sparse(matIndex,matIndex,H_diag);
+    
+    %% ----------------------- Off-Diagonal Term --------------------------
+    %% ------------------------ DOWN Spin part ----------------------------
+    % ------------------------- note 13.05.13------------------------------
+    % <rk'|Hd(own)|rk> = N<r'|Hd|r> = N/L*sum(j=0..L-1) exp(2pi ijk/L) * 
+    % <U'|Tj|U><D'|Tj Hd|D> -> diagonal in UP spin part!! <U|Tj|U> !!
+    % Down spin part is diagonal in up spin part. since <U'|Tj|U> was
+    % condition for chosing of representatives( two states which are only
+    % different by a translation belong to same circle!) so further
+    % calculation of down spin part is similar to my previous versions:
+    % but not same amount of down spin states per repr. now!! but still
+    % ordered correctly and everything. but for calculation i now also need
+    % the connection <D'| Tj Hd |D> = hd(D)*<D'|Tj|D''> -> matrix Tj for
+    % states needed! save it in previous function
+    % plan:
+    % loop over repr. ; application Hd|D>; loop over j: Tj|U> = pj|U> 
+    % connection <D|Tj|D'> 
+    %----------------------------------------------------------------------
+    H_down = calcHamiltonDownOnlyTrans(compDownStatesPerRepr, compInd2ReprDown,...
+        paramT, indNeighbors, normHubbardStates, symOpInvariantsUp, kValue,...
+        basisStatesDown);
+    
+    %% -------------------------- UP Spin Part ----------------------------
+    % ----------------------------note 17.05.13----------------------------
+    % <rk'|Hu(p)|rk> = N/L sum(j=0..L-1) e^(2pi ijk/L) <D'|Tj|D> *
+    % <U'|Tj Hu |U> : now different calculation. because first of all Tj 
+    % not diagonal in Down spin part <D'|Tj|D> ~= <D|Tj|D> and list is
+    % sorted by UP spin part as MSB part. IDEA of calculation:
+    % 1) calc. connection <U'|Tj Hu|U> = hu(U)<U'|Tj|U''> is kind of 
+    % diagonal again. save tranlations connecting U'' and U' with indexRepr
+    % list calculated earlier. and i have the list diagTransMatrixUP 
+    % leaving U unchanged. save this information for UP spin state 
+    % connections and phase factors indices etc. also
+    % 2) loop over UP spin repr. and again over translations Tj within them
+    % from point 1) and find the connection with the "small" Down spin
+    % indices <D'|Tj|D>, here one has to take care of possible non
+    % compatible states. some down spin states may be not common to both up
+    % spin lists -> include in fct <D'|Tj|D>. with right combination this 
+    % should be all
+    %----------------------------------------------------------------------
+    H_up = calcHamiltonUpOnlyTrans( basisReprUp, compDownStatesPerRepr, ...
+        paramT, indNeighbors, normHubbardStates, symOpInvariantsUp, kValue, ...
+        index2ReprUp, symOp2ReprUp, intStatesUp );
+    
+    
+%     x = abs(diag(H_down));
+%     disp([' DOWN: ', num2str(sum(x(:)))]);
+%     x = abs(diag(H_up));
+%     disp([' UP: ', num2str(sum(x(:)))]);
+%     keyboard
+    
+    clearvars -EXCEPT H_diag H_down H_up
+    
+    % Combination of different parts
+    H = H_diag + H_down + H_up;
+
+    % assure hermiticity
+    H = (H+H')/2;
+    
+end
+

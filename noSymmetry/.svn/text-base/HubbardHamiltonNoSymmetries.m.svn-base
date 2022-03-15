@@ -1,0 +1,45 @@
+function H = HubbardHamiltonNoSymmetries( basisStatesUp, basisStatesDown, ...
+    indNeighbors, paramU, paramT)
+%HUBBARDHAMILTONNOSYMMETRIES calculates the full hubbard hamitlonian
+% without application of symmetries for small system sizes
+% NOTE: 16.06.13: tranperecy deteriorated a bit for better memory usage!
+% renamed doubleOccupancies to H and change adding Up of H
+
+% number of UP, DOWN and Combined states
+[nBasisStatesUp,~] = size(basisStatesUp);     
+[nbasisStatesDown,~] = size(basisStatesDown);        
+nHubbardStates = nBasisStatesUp*nbasisStatesDown; 
+
+%% Diagonal Terms
+% count double occupancies
+H = zeros(nbasisStatesDown,nBasisStatesUp); 
+
+for iRepr = 1:nBasisStatesUp  
+     % check which sites are doubly occupied with bsxfun not repmat
+     isDoublyOccupied = bsxfun(@and,basisStatesUp(iRepr,:),basisStatesDown);
+%      % replicate B_repr to size of B
+%      repbasisStatesUp = repmat(basisStatesUp(iRepr,:),nbasisStatesDown,1);
+%      % check which sites are doubly occupiedeyboard
+%      isDoublyOccupied = and(repbasisStatesUp,basisStatesDown);
+%      % sum over them. is this right? TODO
+     H(:,iRepr) = sum(isDoublyOccupied,2);
+    
+end
+%diagonal terms
+H = paramU * H(:);
+H = sparse(1:nHubbardStates,1:nHubbardStates,H);
+
+%% Off-Diagonal Terms (seperate for UP and Down Spins)
+%% DOWN (lsbs)
+% (mit Algorithmus aus heisenberb bsp. : gibt mir indizes
+% innerhalb der g representanten des up spin kanals
+H = H + hamiltonDownNoSyms(basisStatesDown , nBasisStatesUp , paramT , indNeighbors);
+
+%% UP (msbs)
+%--------------------old notes---------------------------------------------
+% Ordnung auch fix , da durch die basissortierung x = N*i + k alle UP repr.
+% abstand N haben fuer fixes k ==> auch heisenberg anwendbar und dann index anpassung
+%--------------------------------------------------------------------------
+H = H + hamiltonUpNoSyms( basisStatesUp, basisStatesDown , paramT , indNeighbors );
+
+

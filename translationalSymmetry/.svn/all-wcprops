@@ -1,0 +1,47 @@
+K 25
+svn:wc:ra_dav:version-url
+V 106
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry
+END
+calcHamiltonUpOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/calcHamiltonUpOnlyTrans.m
+END
+calcHamiltonDownOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 134
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/calcHamiltonDownOnlyTrans.m
+END
+calcHubbardHamiltonOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 137
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/calcHubbardHamiltonOnlyTrans.m
+END
+calcHubbardNormOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 133
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/calcHubbardNormOnlyTrans.m
+END
+calcTransMatrOverlapOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/calcTransMatrOverlapOnlyTrans.m
+END
+combine2HubbardBasisOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 138
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/combine2HubbardBasisOnlyTrans.m
+END
+findReprOnlyTrans.m
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/translationalSymmetry/findReprOnlyTrans.m
+END

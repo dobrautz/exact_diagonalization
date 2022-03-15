@@ -1,0 +1,41 @@
+K 25
+svn:wc:ra_dav:version-url
+V 103
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry
+END
+PointGroupHubbardNorm.m
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/PointGroupHubbardNorm.m
+END
+PointGroupLaFlorience.m
+K 25
+svn:wc:ra_dav:version-url
+V 127
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/PointGroupLaFlorience.m
+END
+calcHamiltonUpPointGroup.m
+K 25
+svn:wc:ra_dav:version-url
+V 130
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/calcHamiltonUpPointGroup.m
+END
+symOpMatrixOverlapPG.m
+K 25
+svn:wc:ra_dav:version-url
+V 126
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/symOpMatrixOverlapPG.m
+END
+calcHamiltonDownPointGroup.m
+K 25
+svn:wc:ra_dav:version-url
+V 132
+/svn/dobrautz_diplomarbeit/!svn/ver/82/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/calcHamiltonDownPointGroup.m
+END
+PointGroupFindRepr.m
+K 25
+svn:wc:ra_dav:version-url
+V 124
+/svn/dobrautz_diplomarbeit/!svn/ver/76/tags/stableHubbardED_eigenValueCalc17Juni2013/pointGroupSymmetry/PointGroupFindRepr.m
+END
